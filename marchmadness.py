@@ -82,3 +82,78 @@ class Player:
     
 def generate_player_name():
     return f"{random.choice(first_names)} {random.choice(last_names)}"
+
+class Matchup:
+    """Represents a single game between two teams."""
+    def __init__(self, team1, team2):
+        names = ["Bob Evans", "Larry Jones", "Charlie West", "Jeff O'neill", "Clint Williams", "Earl Lake", "Tim Jon", "Bob Marley", "Snoop Dog", "Slim Shady", "John Doe", "John Cash", "Simon Claw", "Ted Bundy", "Michael Jordan", "Timmy Joe"]
+        ref_name = random.choice(names)
+        commentator_name = random.choice(names)
+        self.team1 = team1
+        self.team2 = team2
+        self.winner = None
+        self.team1_score = 0
+        self.team2_score = 0
+        self.arena = Arena(f"Arena {random.randint(1, 10)}", random.choice(["NY", "LA", "TX", "FL", "IL"]))
+        self.referee = Referee(f"Ref", ref_name) 
+        self.commentator = Commentator(f"Commentator", commentator_name) 
+        self.fans = [Fan(f"Fan {i+1}", team1 if i % 2 == 0 else team2) for i in range(4)]
+        self.team1_players = team1.players[:5]
+        self.team1_bench = team1.players[5:]
+        self.team2_players = team2.players[:5]
+        self.team2_bench = team2.players[5:]
+
+    def play_game(self):
+        print(f" Tonight's game is between {self.team1} and {self.team2} and the tip off starts now!!")
+        print(f"️ Game at {self.arena}")
+        self.referee.officiate_game(self)
+        self.commentator.provide_commentary(self)
+        for fan in self.fans:
+            fan.cheer()
+        self.team1_score = sum(p.score_points() for p in self.team1_players + self.team1_bench)
+        self.team2_score = sum(p.score_points() for p in self.team2_players + self.team2_bench)
+
+        self.team1.total_points += self.team1_score
+        self.team2.total_points += self.team2_score
+
+        if self.team2_score <= self.team1_score:
+            self.winner = self.team1
+        else:
+            self.winner = self.team2
+            
+        return self.winner, self.team1_players + self.team1_bench + self.team2_players + self.team2_bench
+
+class AbstractRound(ABC):
+    @abstractmethod
+    def play_round(self):
+        pass
+
+class Round(AbstractRound):
+    def __init__(self, teams, round_name):
+        self.teams = teams
+        self.round_name = round_name
+        self.matchups = [Matchup(teams[i], teams[i + 1]) for i in range(0, len(teams), 2)]
+        self.winners = []
+        self.all_players = []
+
+    def play_round(self):
+        print(f"\n{self.round_name}:")
+        for matchup in self.matchups:
+            winner, players = matchup.play_game()
+            print(f"{matchup.team1} vs {matchup.team2} -> Winner: {winner}")
+            print(f"Score: {matchup.team1_score} - {matchup.team2_score}")
+            print(f"{matchup.team1} Starting 5:")
+            for player in matchup.team1_players:
+                print(f"  {player}")
+            print(f"{matchup.team1} Bench:")
+            for player in matchup.team1_bench:
+                print(f"  {player}")
+            print(f"{matchup.team2} Starting 5:")
+            for player in matchup.team2_players:
+                print(f"  {player}")
+            print(f"{matchup.team2} Bench:")
+            for player in matchup.team2_bench:
+                print(f"  {player}")
+            self.winners.append(winner)
+            self.all_players.extend(players)
+        return self.winners, self.all_players
