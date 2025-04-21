@@ -157,3 +157,89 @@ class Round(AbstractRound):
             self.winners.append(winner)
             self.all_players.extend(players)
         return self.winners, self.all_players
+
+class TournamentBracket:
+    def __init__(self, teams):
+        self.teams = teams
+
+class Tournament:
+    def __init__(self, teams):
+        self.bracket = TournamentBracket(sorted(teams, key=lambda t: t.seed))
+        self.players_stats = []
+
+    def run_tournament(self):
+        rounds = [
+            ("Round of 64", 64),
+            ("Round of 32", 32),
+            ("Sweet 16", 16),
+            ("Elite 8", 8),
+            ("Final 4", 4),
+            ("Championship", 2)
+        ]
+
+        teams = self.bracket.teams
+        for round_name, _ in rounds:
+            round_obj = Round(teams, round_name)
+            teams, players = round_obj.play_round()
+            self.players_stats.extend(players)
+
+        print(f"\n🏆 {teams[0]} WINS THE TOURNAMENT! 🏆")
+
+        self.display_top_players()
+        self.display_awards()
+        self.display_team_stats(teams[0])
+
+    def display_top_players(self):
+        print("\n Top 5 Scorers of the Tournament:")
+        
+        # Deduplicate players by name
+        player_map = {}
+        for p in self.players_stats:
+            player_map[p.name] = p  # Latest object kept
+
+        unique_players = list(player_map.values())
+        
+        sorted_players = sorted(unique_players, key=lambda p: p.total_points, reverse=True)
+        top_5 = sorted_players[:5]
+
+        total_points = sum(p.total_points for p in top_5)
+        total_assists = sum(p.total_assists for p in top_5)
+        total_rebounds = sum(p.total_rebounds for p in top_5)
+        total_steals = sum(p.total_steals for p in top_5)
+        total_blocks = sum(p.total_blocks for p in top_5)
+        total_fouls = sum(p.total_fouls for p in top_5)
+
+        for i, player in enumerate(top_5, start=1):
+            print(f"{i}. {player.position} - {player.name} ({player.team_name}) - {player.total_points} pts, {player.total_assists} ast, {player.total_rebounds} reb, {player.total_steals} stl, {player.total_blocks} blk, {player.total_fouls} fts")
+
+        print("\n Combined Stats of Top 5 Players:")
+        print(f"Total Points: {total_points}")
+        print(f"Total Assists: {total_assists}")
+        print(f"Total Rebounds: {total_rebounds}")
+        print(f"Total Steals: {total_steals}")
+        print(f"Total Blocks: {total_blocks}")
+        print(f"Total Fouls: {total_fouls}")
+        
+    def display_awards(self):
+        print("\n Tournament Awards:")
+        
+        player_map = {}
+        for p in self.players_stats:
+            player_map[p.name] = p
+
+        players = list(player_map.values())
+        mvp = max(players, key=lambda p: p.total_points)
+        assist_leader = max(players, key=lambda p: p.total_assists)
+        rebound_leader = max(players, key=lambda p: p.total_rebounds)
+        defensive_leader = max(players, key=lambda p: p.total_steals + p.total_blocks)
+        bench_players = [p for p in players if not p.is_starter]
+        sixth_man = max(bench_players, key=lambda p: p.total_points)
+        most_improved = max(players, key=lambda p: p.total_points / max(1, p.total_fouls))  # crude efficiency metric
+
+        print(f"MVP: {mvp.name} {mvp.position} ({mvp.team_name}) - {mvp.total_points} points")
+        print(f"Most Assists: {assist_leader.name} {assist_leader.position} ({assist_leader.team_name}) - {assist_leader.total_assists} assists")
+        print(f"Most Rebounds: {rebound_leader.name} {rebound_leader.position} ({rebound_leader.team_name}) - {rebound_leader.total_rebounds} rebounds")
+        print(f"Defensive Player of the Year: {defensive_leader.name} {defensive_leader.position} ({defensive_leader.team_name}) - {defensive_leader.total_steals} steals, {defensive_leader.total_blocks} blocks")
+        print(f"Sixth Man of the Year: {sixth_man.name} {sixth_man.position} ({sixth_man.team_name}) - {sixth_man.total_points} points")
+        print(f"Most Improved Player: {most_improved.name} {most_improved.position} ({most_improved.team_name}) - Efficiency: {most_improved.total_points} pts / {most_improved.total_fouls} fouls")
+        
