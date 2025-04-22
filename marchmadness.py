@@ -263,6 +263,51 @@ class Tournament:
         print(f"Defensive Player of the Year: {defensive_leader.name} {defensive_leader.position} ({defensive_leader.team_name}) - {defensive_leader.total_steals} steals, {defensive_leader.total_blocks} blocks")
         print(f"Sixth Man of the Year: {sixth_man.name} {sixth_man.position} ({sixth_man.team_name}) - {sixth_man.total_points} points")
         print(f"Most Improved Player: {most_improved.name} {most_improved.position} ({most_improved.team_name}) - Efficiency: {most_improved.total_points} pts / {most_improved.total_fouls} fouls")
+
+        record_data = []
+        record_data.append({
+            "marker": "New Tournament",
+            "name": mvp.name,
+            "team": mvp.team_name,
+            "award": "MVP",
+            "points": mvp.total_points,
+            "assists": mvp.total_assists,
+            "rebounds": mvp.total_rebounds
+        })
+
+        record_data.append({
+            "name": assist_leader.name,
+            "team": assist_leader.team_name,
+            "award": "Assist Leader",
+            "assists": assist_leader.total_assists
+        })
+
+        record_data.append({
+            "name": rebound_leader.name,
+            "team": rebound_leader.team_name,
+            "award": "Rebound Leader",
+            "rebounds": rebound_leader.total_rebounds
+        })
+
+        record_data.append({
+            "name": sixth_man.name,
+            "team": sixth_man.team_name,
+            "award": "Sixth Man",
+            "bench_points": sixth_man.total_points
+        })
+
+        record_data.append({
+            "name": defensive_leader.name,
+            "team": defensive_leader.team_name,
+            "award": "Defensive Player",
+            "steals": defensive_leader.total_steals,
+            "blocks": defensive_leader.total_blocks
+        })
+
+
+        hof_data = load_hall_of_fame()
+        hof_data.extend(record_data)
+        save_hall_of_fame(hof_data)
         
 def display_team_stats(self, champion):
         print(f"\n {champion.name} Total Points Scored: {champion.total_points}")
