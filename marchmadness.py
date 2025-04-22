@@ -243,3 +243,79 @@ class Tournament:
         print(f"Sixth Man of the Year: {sixth_man.name} {sixth_man.position} ({sixth_man.team_name}) - {sixth_man.total_points} points")
         print(f"Most Improved Player: {most_improved.name} {most_improved.position} ({most_improved.team_name}) - Efficiency: {most_improved.total_points} pts / {most_improved.total_fouls} fouls")
         
+def display_team_stats(self, champion):
+        print(f"\n {champion.name} Total Points Scored: {champion.total_points}")
+
+class Scoreboard:
+    def __init__(self):
+        self.scores = {}
+
+    def update_score(self, matchup, score):
+        self.scores[matchup] = score
+
+    def display_scores(self):
+        for matchup, score in self.scores.items():
+            print(f"{matchup}: {score}")
+
+class Referee:
+    def __init__(self,title, name):
+        self.name = name
+
+    def officiate_game(self, matchup):
+        print(f"Referee {self.name} is officiating {matchup.team1} vs {matchup.team2}")
+
+class Arena:
+    def __init__(self, name, location):
+        self.name = name
+        self.location = location
+
+    def __str__(self):
+        return f"{self.name} in {self.location}"
+
+class Commentator:
+    def __init__(self, title, name):
+        self.name = name
+
+    def provide_commentary(self, matchup):
+        print(f"Commentator {self.name}: 'What a game between {matchup.team1} and {matchup.team2}!'")
+
+class Fan:
+    def __init__(self, name, team):
+        self.name = name
+        self.team = team
+
+    def cheer(self):
+        print(f"{self.name}: 'Go {self.team.name}!'")
+
+class TournamentDirector:
+    def __init__(self, name):
+        self.name = name
+
+    def start_tournament(self):
+        print(f"Tournament Director {self.name} announces: 'Let the games begin!'")
+    
+def generate_teams():
+    team_names = [
+        "Crimson Raptors", "Blazing Tornadoes", "Golden Vipers", "Shadow Wolves", "Icy Hawks",
+        "Electric Rhinos", "Lava Sharks", "Phantom Foxes", "Storm Kings", "Fire Falcons",
+        "Iron Titans", "Venom Vultures", "Aqua Panthers", "Thundering Eagles", "Frost Giants",
+        "Solar Bears", "Rogue Lions", "Steel Cobras", "Quantum Owls", "Mega Bulls",
+        "Blitz Rams", "Chaos Cougars", "Nebula Tigers", "Galactic Gorillas", "Warp Jaguars",
+        "Nova Pythons", "Plasma Gators", "Cyber Scorpions", "Crater Knights", "Dust Devils",
+        "Warp Wolves", "Turbo Turtles", "Inferno Monkeys", "Doom Dragons", "Sky Krakens",
+        "Tornado Tornadoes", "Pixel Phoenix", "Griffin Blades", "Blade Bison", "Rocket Rhinos",
+        "Cobalt Bears", "Dark Dolphins", "Galaxy Ghosts", "Night Ninjas", "Dawn Demons",
+        "Savage Swans", "Stealth Stingrays", "Howling Hounds", "Electric Emus", "Raging Raccoons",
+        "Solar Sloths", "Nuclear Narwhals", "Meteor Minotaurs", "Hyper Hawks", "Zombie Zebras",
+        "Omega Otters", "Chaos Chickens", "Flash Frogs", "Cyber Crows", "Polar Peacocks",
+        "Warping Weasels", "Dark Dodos", "Velocity Vultures", "Robo Roosters"
+    ]
+    random.shuffle(team_names)
+    teams = [Team(name, i + 1) for i, name in enumerate(team_names)]
+    for team in teams:
+        starting_five = [Player(generate_player_name(), team.name, position[i], is_starter = True) for i in range(5)]
+        bench = [Player(generate_player_name(), team.name, random.choice(position), is_starter = False) for _ in range(3)]
+        team.players = starting_five + bench
+    return teams
+def generate_player_name():
+    return f"{random.choice(first_names)} {random.choice(last_names)}"
