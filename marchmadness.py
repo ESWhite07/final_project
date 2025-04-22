@@ -319,3 +319,22 @@ def generate_teams():
     return teams
 def generate_player_name():
     return f"{random.choice(first_names)} {random.choice(last_names)}"
+
+if __name__ == "__main__":
+    teams = generate_teams()
+    director = TournamentDirector("John Smith") 
+    try:
+        with open("tournament_results.txt", "w", encoding="utf-8") as f:
+            original_stdout = sys.stdout
+            sys.stdout = f  # Redirect print output to the file
+
+            director.start_tournament()
+            tournament = Tournament(teams)
+            tournament.run_tournament()
+            f.flush() # Makes sure everything is written
+        sys.stdout = original_stdout 
+        print(" Tournament results exported to 'tournament_results.txt'")
+    except Exception as e:
+        # Restore stdout and print the error if something went wrong
+        sys.stdout = original_stdout
+        print(" Error during tournament:", e)
