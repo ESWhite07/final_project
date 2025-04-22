@@ -5,6 +5,27 @@ import sys
 import json
 import os
 
+HALL_OF_FAME_FILE = "hall_of_fame.txt"
+
+def load_hall_of_fame():
+    if not os.path.exists(HALL_OF_FAME_FILE):
+        print(f"[INFO] {HALL_OF_FAME_FILE} not found. Initializing new record.")
+        return []
+
+    with open(HALL_OF_FAME_FILE, "r") as f:
+        try:
+            data = json.load(f)
+            data.append({"marker": "New Tournament"})
+            return data
+        except json.JSONDecodeError:
+            print(f"[WARN] Couldn't decode {HALL_OF_FAME_FILE}, file might be empty or corrupted. Reinitializing.")
+            return []
+
+def save_hall_of_fame(data):
+    with open(HALL_OF_FAME_FILE, "w") as f:
+        json.dump(data, f, indent=4)
+
+
 position = ["PG","SG", "SF", "PF", "C"]
         
 first_names = [
